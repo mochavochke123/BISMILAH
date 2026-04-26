@@ -209,8 +209,17 @@ class Game:
         self.music_stage = 0
         self.game_background = None
         self.initial_game_background = None
-        self.initial_background_files = ["y.jpg", "anu.jpg"]
-        self.game_background_files = ["ddd.png", "ddd1.jpg"]
+        self.initial_background_files = ["anu.jpg", "anu1.jpg", "anu2.jpg"]
+        self.game_background_files = ["ddd.jpg", "ddd1.jpg", "ddd2.jpg", "ddd3.jpg"]
+        # Load backgrounds at startup
+        init_bg = random.choice(self.initial_background_files)
+        self.initial_game_background = self.load_image(init_bg)
+        if self.initial_game_background:
+            self.initial_game_background = pygame.transform.scale(self.initial_game_background, (self.virtual_width, self.virtual_height))
+        game_bg = random.choice(self.game_background_files)
+        self.game_background = self.load_image(game_bg)
+        if self.game_background:
+            self.game_background = pygame.transform.scale(self.game_background, (self.virtual_width, self.virtual_height))
         self.toy_background = None
         self.blood_background = None
         self.game_over_image = None
@@ -457,7 +466,7 @@ class Game:
                     self.mode_backgrounds[i], (self.virtual_width, self.virtual_height)
                 )
         # Game backgrounds
-        self.game_background = self.load_image("ddd.png")
+        self.game_background = self.load_image("ddd.jpg")
         if self.game_background:
             self.game_background = pygame.transform.scale(
                 self.game_background, (self.virtual_width, self.virtual_height)
@@ -2809,7 +2818,7 @@ class Game:
             self.virtual_screen.blit(
                 self.blood_background, (offset + shake_x, 0 + shake_y)
             )
-        elif self.score < 100 and self.initial_game_background:
+        elif self.score < 150 and self.initial_game_background:
             self.virtual_screen.blit(
                 self.initial_game_background, (offset + shake_x, 0 + shake_y)
             )
