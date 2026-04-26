@@ -3698,7 +3698,7 @@ class Game:
                 image,
                 (255, 0, 0),
             ]
-        if random.random() < 0.1 and self.score >= 100:
+        if random.random() < 0.1 and self.score >= 150:
             y = random.randint(
                 self.virtual_height // 2 - h, self.virtual_height - h - 30
             )
@@ -4249,7 +4249,7 @@ class Game:
                 self.play_music("fon.mp3")
                 self.music_stage = 4
             elif (
-                self.score >= 100
+self.score >= 150
                 and self.music_stage < 3
                 and not self.death_music_played
             ):
