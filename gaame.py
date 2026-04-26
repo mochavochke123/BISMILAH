@@ -209,8 +209,8 @@ class Game:
         self.music_stage = 0
         self.game_background = None
         self.initial_game_background = None
-        self.initial_background_files = ["anu.jpg", "anu1.jpg", "anu2.jpg"]
-        self.game_background_files = ["ddd.jpg", "ddd1.jpg", "ddd2.jpg", "ddd3.jpg"]
+        self.initial_background_files = ["y.jpg", "anu.jpg"]
+        self.game_background_files = ["ddd.png", "ddd1.jpg"]
         self.toy_background = None
         self.blood_background = None
         self.game_over_image = None
@@ -385,7 +385,7 @@ class Game:
         self.skateboard_particle_timer = 0
         pygame.event.set_grab(True)
         pygame.mouse.set_visible(True)
-        # load_skateboard_assets()  # УДАЛЕН 
+        self.load_skateboard_assets() 
 
 
     def load_controls(self):
@@ -627,7 +627,7 @@ class Game:
         self.q1_sound = self.load_sound("q1.mp3")
         if self.q1_sound:
             self.q1_sound.set_volume(self.volume * 2.0)
-        # load_skateboard_assets()  # УДАЛЕН
+        self.load_skateboard_assets()
 
     def load_skateboard_assets(self):
         """Загрузи скейтборды из папки или создай стандартные"""
@@ -1422,8 +1422,6 @@ class Game:
         transition_alpha,
         backgrounds,
     ):
-        if not backgrounds:
-            return current_index, next_index, timer, transition_timer, transition_alpha
         timer += 1
         if timer >= switch_interval:
             next_index = (current_index + 1) % len(backgrounds)
@@ -1441,9 +1439,6 @@ class Game:
     def draw_background_transition(
         self, backgrounds, current_index, next_index, transition_alpha
     ):
-        if not backgrounds or not backgrounds[0]:
-            self.virtual_screen.fill((0, 0, 0))
-            return
         current_bg = backgrounds[current_index]
         if current_bg:
             self.virtual_screen.blit(current_bg, (0, 0))
@@ -2810,41 +2805,21 @@ class Game:
                 )
             else:
                 self.virtual_screen.fill((0, 0, 0))
-        elif self.score >= BOSS_THRESHOLD_END and self.blood_background and self.score < 1000:
+        elif self.score >= BOSS_THRESHOLD_END and self.blood_background:
             self.virtual_screen.blit(
                 self.blood_background, (offset + shake_x, 0 + shake_y)
             )
-        elif self.score >= 800 and self.score < 1000:
-            if self.sf_background:
-                self.virtual_screen.blit(
-                    self.sf_background, (offset + shake_x, 0 + shake_y)
-                )
-            else:
-                self.virtual_screen.fill((0, 0, 0))
-        elif self.score >= 400 and self.score < 800:
-            if self.blood_background:
-                self.virtual_screen.blit(
-                    self.blood_background, (offset + shake_x, 0 + shake_y)
-                )
-            else:
-                self.virtual_screen.fill((0, 0, 0))
-        elif self.score >= 250 and self.score < 400:
-            if self.toy_background:
-                self.virtual_screen.blit(
-                    self.toy_background, (offset + shake_x, 0 + shake_y)
-                )
-            else:
-                self.virtual_screen.fill((0, 0, 0))
-        elif self.score >= 150 and self.score < 250:
-            if self.game_background:
-                self.virtual_screen.blit(
-                    self.game_background, (offset + shake_x, 0 + shake_y)
-                )
-            else:
-                self.virtual_screen.fill((0, 0, 0))
-        elif self.score < 150 and self.initial_game_background:
+        elif self.score < 100 and self.initial_game_background:
             self.virtual_screen.blit(
                 self.initial_game_background, (offset + shake_x, 0 + shake_y)
+            )
+        elif self.score < 250 and self.game_background:
+            self.virtual_screen.blit(
+                self.game_background, (offset + shake_x, 0 + shake_y)
+            )
+        elif self.toy_background:
+            self.virtual_screen.blit(
+                self.toy_background, (offset + shake_x, 0 + shake_y)
             )
         else:
             self.virtual_screen.fill((0, 0, 0))
@@ -5500,6 +5475,26 @@ class Game:
                         elif exit_rect.collidepoint(scaled_pos):
                             self.return_to_main_menu()
                     elif self.state == "select_mode":
+                        (
+                            skateboard_rects,
+                            load_custom_rect,
+                            next_rect,
+                            back_rect,
+                            vol_up_rect,
+                            vol_down_rect,
+                        ) = self.draw_skateboard_select()
+                        for i, rect in enumerate(skateboard_rects):
+                            if rect.collidepoint(scaled_pos):
+                                self.selected_skateboard = i
+                        if load_custom_rect.collidepoint(scaled_pos):
+                            self.load_custom_skateboard()
+                        if next_rect.collidepoint(scaled_pos):
+                            self.state = "select_mode"
+                        if back_rect.collidepoint(scaled_pos):
+                            self.state = "select_character"
+                        if vol_up_rect.collidepoint(scaled_pos):
+                            self.adjust_volume(0.1)
+                        elif vol_down_rect.collidepoint(scaled_pos):
                             self.adjust_volume(-0.1)
                 elif event.type == pygame.MOUSEWHEEL:
                     if self.state == "help":
@@ -5549,6 +5544,8 @@ class Game:
             elif self.state == "help":
                 self.draw_help_screen()
 
+            elif self.state == "select_mode":
+                self.draw_skateboard_select()
             elif self.state == "select_mode":
                 self.draw_select_mode()
             elif self.state == "game_over":
