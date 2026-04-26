@@ -209,7 +209,7 @@ class Game:
         self.music_stage = 0
         self.game_background = None
         self.initial_game_background = None
-        self.initial_background_files = ["anu.jpg", "anu1.jpg", "anu2.jpg"]
+        self.initial_background_files = ["y.jpg", "anu.jpg", "anu1.jpg", "anu2.jpg"]
         self.game_background_files = ["ddd.png", "ddd1.jpg", "ddd2.jpg", "ddd3.jpg"]
         # Load backgrounds at startup
         init_bg = random.choice(self.initial_background_files)
