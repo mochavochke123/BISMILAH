@@ -3828,14 +3828,12 @@ class Game:
                 target_x = random.randint(0, self.virtual_width)
                 target_y = random.randint(0, self.virtual_height)
         else:
-            target_x, target_y = self.player1_x, (
-                self.player1_y
-                if not self.player1_is_dead
-                else (
-                    random.randint(0, self.virtual_width),
-                    random.randint(0, self.virtual_height),
-                )
-            )
+            if not self.player1_is_dead:
+                target_x = self.player1_x
+                target_y = self.player1_y
+            else:
+                target_x = random.randint(0, self.virtual_width)
+                target_y = random.randint(0, self.virtual_height)
         w = random.randint(60, 150)
         h = random.randint(60, 180)
         proj_x = self.boss_x
@@ -4863,14 +4861,12 @@ self.score >= 150
                     target_x = random.randint(0, self.virtual_width)
                     target_y = random.randint(0, self.virtual_height)
             else:
-                target_x, target_y = self.player1_x, (
-                    self.player1_y
-                    if not self.player1_is_dead
-                    else (
-                        random.randint(0, self.virtual_width),
-                        random.randint(0, self.virtual_height),
-                    )
-                )
+                if not self.player1_is_dead:
+                    target_x = self.player1_x
+                    target_y = self.player1_y
+                else:
+                    target_x = random.randint(0, self.virtual_width)
+                    target_y = random.randint(0, self.virtual_height)
             proj_x = proj[0]
             proj_y = proj[1]
             dx = target_x - proj_x
