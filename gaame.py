@@ -5616,7 +5616,11 @@ self.score >= 150
 
 if __name__ == "__main__":
     print("=" * 30)
-    print(" BISMILAH - Run the game!")
+    print(" BISMILAH - Press ENTER to start!")
     print("=" * 30)
+    try:
+        input("Press ENTER to start...")
+    except:
+        pass  # If running without TTY
     game = Game()
     game.main()
