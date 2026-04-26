@@ -424,7 +424,7 @@ class Game:
 
     def load_image(self, file):
         try:
-            return pygame.image.load(file)
+            return pygame.image.load("images/" + file)
         except:
             print(f"Warning: Could not load image {file}")
             return None
@@ -432,7 +432,7 @@ class Game:
     def load_gif_frames(self, file, scale_size):
         frames = []
         try:
-            gif = Image.open(file)
+            gif = Image.open("images/" + file)
             frame_index = 0
             while True:
                 frame = gif.copy().convert("RGBA")
@@ -691,7 +691,7 @@ class Game:
 
     def load_sound(self, file):
         try:
-            sound = pygame.mixer.Sound(file)
+            sound = pygame.mixer.Sound("music/" + file)
             sound.set_volume(self.volume)
             return sound
         except Exception as e:
@@ -751,7 +751,7 @@ class Game:
         if self.current_music != filename:
             pygame.mixer.music.stop()
             try:
-                pygame.mixer.music.load(filename)
+                pygame.mixer.music.load("music/" + filename)
                 pygame.mixer.music.set_volume(self.volume)
                 pygame.mixer.music.play(-1)
                 self.current_music = filename
