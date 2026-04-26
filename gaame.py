@@ -210,7 +210,7 @@ class Game:
         self.game_background = None
         self.initial_game_background = None
         self.initial_background_files = ["anu.jpg", "anu1.jpg", "anu2.jpg"]
-        self.game_background_files = ["ddd.jpg", "ddd1.jpg", "ddd2.jpg", "ddd3.jpg"]
+        self.game_background_files = ["ddd.png", "ddd1.jpg", "ddd2.jpg", "ddd3.jpg"]
         # Load backgrounds at startup
         init_bg = random.choice(self.initial_background_files)
         self.initial_game_background = self.load_image(init_bg)
@@ -394,7 +394,7 @@ class Game:
         self.skateboard_particle_timer = 0
         pygame.event.set_grab(True)
         pygame.mouse.set_visible(True)
-        self.load_skateboard_assets() 
+        # load_skateboard_assets() removed 
 
 
     def load_controls(self):
@@ -465,8 +465,8 @@ class Game:
                 self.mode_backgrounds[i] = pygame.transform.scale(
                     self.mode_backgrounds[i], (self.virtual_width, self.virtual_height)
                 )
-        # Game backgrounds
-        self.game_background = self.load_image("ddd.jpg")
+        # Game backgrounds - use ddd.png which exists
+        self.game_background = self.load_image("ddd.png")
         if self.game_background:
             self.game_background = pygame.transform.scale(
                 self.game_background, (self.virtual_width, self.virtual_height)
@@ -636,7 +636,7 @@ class Game:
         self.q1_sound = self.load_sound("q1.mp3")
         if self.q1_sound:
             self.q1_sound.set_volume(self.volume * 2.0)
-        self.load_skateboard_assets()
+        # load_skateboard_assets() removed
 
     def load_skateboard_assets(self):
         """Загрузи скейтборды из папки или создай стандартные"""
