@@ -1481,18 +1481,40 @@ class Game:
     def draw_welcome(self):
         self.play_music("rr.mp3")
         self.virtual_screen.fill((0, 0, 0))
-        # Simple title text instead of animation
-        title = self.title_font.render("BISMILAH", True, (255, 200, 0))
-        title = pygame.transform.scale(title, (int(title.get_width() * 2), int(title.get_height() * 2)))
-        title_x = self.virtual_width // 2 - title.get_width() // 2
-        title_y = self.virtual_height // 2 - 50
-        self.virtual_screen.blit(title, (title_x, title_y))
-        # Subtitle
-        subtitle = self.font.render("Press ENTER to start", True, (255, 255, 255))
-        sub_x = self.virtual_width // 2 - subtitle.get_width() // 2
-        sub_y = self.virtual_height // 2 + 30
-        self.virtual_screen.blit(subtitle, (sub_x, sub_y))
+        frame = self.get_animated_frame(
+            self.welcome_frames, self.welcome_frame_timer, self.welcome_fps
+        )
+        if frame:
+            self.virtual_screen.blit(frame, (0, 0))
+            self.welcome_frame_timer += 1
+        elif self.welcome_image:
+            self.virtual_screen.blit(self.welcome_image, (0, 0))
         self.draw_stars(1.0, 0, 0)
+        self.draw_button(
+            "Начать игру",
+            self.virtual_width // 2 - 100,
+            self.virtual_height - 60,
+            200,
+            50,
+            (100, 255, 100),
+            (150, 255, 150),
+            (255, 255, 255),
+            hover_scale=1.0 + 0.05 * math.sin(self.animation_timer * 0.075),
+        )
+        exit_button = self.draw_button(
+            "Выход",
+            self.virtual_width // 2 - 50,
+            self.virtual_height - 10,
+            100,
+            40,
+            (255, 100, 100),
+            (255, 150, 150),
+            (255, 255, 255),
+            hover_scale=1.0 + 0.05 * math.sin(self.animation_timer * 0.075),
+        )
+        return pygame.Rect(
+            self.virtual_width // 2 - 100, self.virtual_height - 60, 200, 50
+        ), pygame.Rect(self.virtual_width // 2 - 50, self.virtual_height - 10, 100, 40)
 
     def draw_character_select(self):
         self.play_music("rr.mp3")
@@ -5318,7 +5340,11 @@ self.score >= 150
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     scaled_pos = self.get_scaled_mouse_pos()
                     if self.state == "welcome":
-                        pass  # Now using keyboard (ENTER key)
+                        play_rect, exit_rect = self.draw_welcome()
+                        if play_rect.collidepoint(scaled_pos):
+                            self.state = "select_character"
+                        elif exit_rect.collidepoint(scaled_pos):
+                            self.quit_game()
                     elif self.state == "select_character":
                         (
                             char_rects,
@@ -5589,17 +5615,8 @@ self.score >= 150
 
 
 if __name__ == "__main__":
-    # ASCII Art in console
-    print("""
-⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤
-⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-⠐⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-⠡⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-⠠⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-⠐⠁⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-⠠⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁⠁
-
-        """)
-    input("Press ENTER to start...")
+    print("=" * 30)
+    print(" BISMILAH - Run the game!")
+    print("=" * 30)
     game = Game()
     game.main()
