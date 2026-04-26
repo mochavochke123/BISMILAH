@@ -465,12 +465,18 @@ class Game:
                 self.mode_backgrounds[i] = pygame.transform.scale(
                     self.mode_backgrounds[i], (self.virtual_width, self.virtual_height)
                 )
-        # Game backgrounds - use ddd.png which exists
+        # Game backgrounds - load all ddd backgrounds
         self.game_background = self.load_image("ddd.png")
         if self.game_background:
             self.game_background = pygame.transform.scale(
                 self.game_background, (self.virtual_width, self.virtual_height)
             )
+        # Also load ddd jpg list for score 150-249
+        self.ddd_backgrounds = []
+        for f in ["ddd.jpg", "ddd1.jpg", "ddd2.jpg", "ddd3.jpg"]:
+            img = self.load_image(f)
+            if img:
+                self.ddd_backgrounds.append(pygame.transform.scale(img, (self.virtual_width, self.virtual_height)))
         self.toy_background = self.load_image("toy.jpg")
         if self.toy_background:
             self.toy_background = pygame.transform.scale(
