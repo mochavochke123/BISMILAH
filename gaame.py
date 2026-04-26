@@ -5616,6 +5616,7 @@ self.score >= 150
 
 if __name__ == "__main__":
     print("=" * 30)
+    print("не забывай бэмить над какашками!")
     print(" BISMILAH - Press ENTER to start!")
     print("=" * 30)
     try:
