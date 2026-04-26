@@ -209,6 +209,8 @@ class Game:
         self.music_stage = 0
         self.game_background = None
         self.initial_game_background = None
+        self.current_anu_bg = None
+        self.anu_backgrounds = []
         self.initial_background_files = ["y.jpg", "anu.jpg", "anu1.jpg", "anu2.jpg"]
         self.game_background_files = ["ddd.png", "ddd1.jpg", "ddd2.jpg", "ddd3.jpg"]
         # Load backgrounds at startup
@@ -466,7 +468,7 @@ class Game:
                     self.mode_backgrounds[i], (self.virtual_width, self.virtual_height)
                 )
         # Game backgrounds - load all ddd backgrounds
-        self.game_background = self.load_image("ddd.png")
+        self.game_background = self.load_image("ddd.jpg")
         if self.game_background:
             self.game_background = pygame.transform.scale(
                 self.game_background, (self.virtual_width, self.virtual_height)
@@ -477,6 +479,15 @@ class Game:
             img = self.load_image(f)
             if img:
                 self.ddd_backgrounds.append(pygame.transform.scale(img, (self.virtual_width, self.virtual_height)))
+        # Also load anu backgrounds for score 0-149
+        self.anu_backgrounds = []
+        for f in ["anu.jpg", "anu1.jpg", "anu2.jpg"]:
+            img = self.load_image(f)
+            if img:
+                self.anu_backgrounds.append(pygame.transform.scale(img, (self.virtual_width, self.virtual_height)))
+        # Pick random anu background for game start
+        if self.anu_backgrounds:
+            self.current_anu_bg = random.choice(self.anu_backgrounds)
         self.toy_background = self.load_image("toy.jpg")
         if self.toy_background:
             self.toy_background = pygame.transform.scale(
@@ -2824,20 +2835,21 @@ class Game:
             self.virtual_screen.blit(
                 self.blood_background, (offset + shake_x, 0 + shake_y)
             )
-        elif self.score < 150 and self.initial_game_background:
-            self.virtual_screen.blit(
-                self.initial_game_background, (offset + shake_x, 0 + shake_y)
-            )
-        elif self.score < 250 and self.game_background:
-            self.virtual_screen.blit(
-                self.game_background, (offset + shake_x, 0 + shake_y)
-            )
-        elif self.toy_background:
-            self.virtual_screen.blit(
-                self.toy_background, (offset + shake_x, 0 + shake_y)
-            )
-        else:
-            self.virtual_screen.fill((0, 0, 0))
+        elif self.score >= 150 and self.score < 250:
+            # ddd backgrounds for score 150-249
+            if hasattr(self, 'ddd_backgrounds') and self.ddd_backgrounds:
+                idx = (self.score // 150) % len(self.ddd_backgrounds)
+                self.virtual_screen.blit(self.ddd_backgrounds[idx], (offset + shake_x, 0 + shake_y))
+            elif self.game_background:
+                self.virtual_screen.blit(self.game_background, (offset + shake_x, 0 + shake_y))
+        elif self.score >= 250 and self.score < 400 and self.toy_background:
+            self.virtual_screen.blit(self.toy_background, (offset + shake_x, 0 + shake_y))
+        elif self.score < 150:
+            # anu backgrounds for score 0-149
+            if self.current_anu_bg:
+                self.virtual_screen.blit(self.current_anu_bg, (offset + shake_x, 0 + shake_y))
+            elif self.initial_game_background:
+                self.virtual_screen.blit(self.initial_game_background, (offset + shake_x, 0 + shake_y))
         if self.score < SUN_THRESHOLD:
             self.draw_sun_and_rays(shake_x, shake_y)
         bonus_scale = 1 + 0.1 * math.sin(self.animation_timer * 0.2)
@@ -3847,6 +3859,9 @@ class Game:
         return [proj_x, proj_y, w, h, "boss_proj", vel_x, vel_y, image]
 
     def reset_game(self):
+        # Pick new random anu background
+        if hasattr(self, 'anu_backgrounds') and self.anu_backgrounds:
+            self.current_anu_bg = random.choice(self.anu_backgrounds)
         selected_initial = random.choice(self.initial_background_files)
         self.initial_game_background = self.load_image(selected_initial)
         if self.initial_game_background:
