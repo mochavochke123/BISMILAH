@@ -209,8 +209,8 @@ class Game:
         self.music_stage = 0
         self.game_background = None
         self.initial_game_background = None
-        self.initial_background_files = ["y.jpg", "anu.jpg"]
-        self.game_background_files = ["ddd.png", "ddd1.jpg"]
+        self.initial_background_files = ["anu.jpg", "anu1.jpg", "anu2.jpg"]
+        self.game_background_files = ["ddd.jpg", "ddd1.jpg", "ddd2.jpg", "ddd3.jpg"]
         self.toy_background = None
         self.blood_background = None
         self.game_over_image = None
@@ -1422,6 +1422,8 @@ class Game:
         transition_alpha,
         backgrounds,
     ):
+        if not backgrounds:
+            return current_index, next_index, timer, transition_timer, transition_alpha
         timer += 1
         if timer >= switch_interval:
             next_index = (current_index + 1) % len(backgrounds)
@@ -1439,6 +1441,9 @@ class Game:
     def draw_background_transition(
         self, backgrounds, current_index, next_index, transition_alpha
     ):
+        if not backgrounds or not backgrounds[0]:
+            self.virtual_screen.fill((0, 0, 0))
+            return
         current_bg = backgrounds[current_index]
         if current_bg:
             self.virtual_screen.blit(current_bg, (0, 0))
@@ -2805,21 +2810,41 @@ class Game:
                 )
             else:
                 self.virtual_screen.fill((0, 0, 0))
-        elif self.score >= BOSS_THRESHOLD_END and self.blood_background:
+        elif self.score >= BOSS_THRESHOLD_END and self.blood_background and self.score < 1000:
             self.virtual_screen.blit(
                 self.blood_background, (offset + shake_x, 0 + shake_y)
             )
-        elif self.score < 100 and self.initial_game_background:
+        elif self.score >= 800 and self.score < 1000:
+            if self.sf_background:
+                self.virtual_screen.blit(
+                    self.sf_background, (offset + shake_x, 0 + shake_y)
+                )
+            else:
+                self.virtual_screen.fill((0, 0, 0))
+        elif self.score >= 400 and self.score < 800:
+            if self.blood_background:
+                self.virtual_screen.blit(
+                    self.blood_background, (offset + shake_x, 0 + shake_y)
+                )
+            else:
+                self.virtual_screen.fill((0, 0, 0))
+        elif self.score >= 250 and self.score < 400:
+            if self.toy_background:
+                self.virtual_screen.blit(
+                    self.toy_background, (offset + shake_x, 0 + shake_y)
+                )
+            else:
+                self.virtual_screen.fill((0, 0, 0))
+        elif self.score >= 150 and self.score < 250:
+            if self.game_background:
+                self.virtual_screen.blit(
+                    self.game_background, (offset + shake_x, 0 + shake_y)
+                )
+            else:
+                self.virtual_screen.fill((0, 0, 0))
+        elif self.score < 150 and self.initial_game_background:
             self.virtual_screen.blit(
                 self.initial_game_background, (offset + shake_x, 0 + shake_y)
-            )
-        elif self.score < 250 and self.game_background:
-            self.virtual_screen.blit(
-                self.game_background, (offset + shake_x, 0 + shake_y)
-            )
-        elif self.toy_background:
-            self.virtual_screen.blit(
-                self.toy_background, (offset + shake_x, 0 + shake_y)
             )
         else:
             self.virtual_screen.fill((0, 0, 0))
