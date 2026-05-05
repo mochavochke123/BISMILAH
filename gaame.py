@@ -2657,21 +2657,6 @@ class Game:
             vel_y += self.current_mode["jump_hold"] * slowdown_factor
             jump_timer += 1
         y += vel_y * slowdown_factor
-        player_hitbox_w = PLAYER_SIZE * PLAYER_HITBOX_SCALE
-        player_hitbox_h = (
-            PLAYER_SIZE * (0.5 if is_crouching else 1.0) * PLAYER_HITBOX_SCALE
-        )
-        crouch_offset = PLAYER_SIZE * 0.5 if is_crouching else 0
-        player_hitbox_x = x + (PLAYER_SIZE - player_hitbox_w) // 2
-        player_hitbox_y = (
-            y
-            + ((PLAYER_SIZE // 2 if is_crouching else PLAYER_SIZE) - player_hitbox_h)
-            // 2
-            + crouch_offset
-        )
-        player_rect = pygame.Rect(
-            player_hitbox_x, player_hitbox_y, player_hitbox_w, player_hitbox_h
-        )
         if is_crouching:
             y = self.virtual_height - PLAYER_SIZE // 2 - 10
             was_on_ground = True
@@ -2688,6 +2673,21 @@ class Game:
                 y = 0
                 vel_y = 0
             was_on_ground = y >= ground_y
+        player_hitbox_w = PLAYER_SIZE * PLAYER_HITBOX_SCALE
+        player_hitbox_h = (
+            PLAYER_SIZE * (0.5 if is_crouching else 1.0) * PLAYER_HITBOX_SCALE
+        )
+        crouch_offset = PLAYER_SIZE * 0.5 if is_crouching else 0
+        player_hitbox_x = x + (PLAYER_SIZE - player_hitbox_w) // 2
+        player_hitbox_y = (
+            y
+            + ((PLAYER_SIZE // 2 if is_crouching else PLAYER_SIZE) - player_hitbox_h)
+            // 2
+            + crouch_offset
+        )
+        player_rect = pygame.Rect(
+            player_hitbox_x, player_hitbox_y, player_hitbox_w, player_hitbox_h
+        )
         if jump_animation_timer > 0:
             jump_animation_timer -= 1
         # Timers
@@ -4625,6 +4625,11 @@ self.score >= 150
             if bonus[0] < -BONUS_SIZE:
                 bonuses.remove(bonus)
             bonus_rect = pygame.Rect(bonus[0], bonus[1], BONUS_SIZE, BONUS_SIZE)
+            p1_y = (
+                self.virtual_height - PLAYER_SIZE // 2 - 10
+                if self.player1_is_crouching
+                else self.player1_y
+            )
             player1_hitbox_w = PLAYER_SIZE * PLAYER_HITBOX_SCALE
             player1_hitbox_h = (
                 PLAYER_SIZE
@@ -4634,7 +4639,7 @@ self.score >= 150
             crouch_offset_p1 = PLAYER_SIZE * 0.5 if self.player1_is_crouching else 0
             player1_hitbox_x = self.player1_x + (PLAYER_SIZE - player1_hitbox_w) // 2
             player1_hitbox_y = (
-                self.player1_y
+                p1_y
                 + (
                     (PLAYER_SIZE // 2 if self.player1_is_crouching else PLAYER_SIZE)
                     - player1_hitbox_h
@@ -4663,6 +4668,11 @@ self.score >= 150
                     True,
                 )
             if self.coop_mode:
+                p2_y = (
+                    self.virtual_height - PLAYER_SIZE // 2 - 10
+                    if self.player2_is_crouching
+                    else self.player2_y
+                )
                 player2_hitbox_w = PLAYER_SIZE * PLAYER_HITBOX_SCALE
                 player2_hitbox_h = (
                     PLAYER_SIZE
@@ -4674,7 +4684,7 @@ self.score >= 150
                 )
                 crouch_offset_p2 = PLAYER_SIZE * 0.5 if self.player2_is_crouching else 0
                 player2_hitbox_y = (
-                    self.player2_y
+                    p2_y
                     + (
                         (PLAYER_SIZE // 2 if self.player2_is_crouching else PLAYER_SIZE)
                         - player2_hitbox_h
@@ -4884,6 +4894,11 @@ self.score >= 150
             self.boss_projectiles[:] = self.boss_projectiles[-20:]
 
     def handle_collisions(self):
+        p1_y = (
+            self.virtual_height - PLAYER_SIZE // 2 - 10
+            if self.player1_is_crouching
+            else self.player1_y
+        )
         player1_hitbox_w = PLAYER_SIZE * PLAYER_HITBOX_SCALE
         player1_hitbox_h = (
             PLAYER_SIZE
@@ -4893,7 +4908,7 @@ self.score >= 150
         crouch_offset_p1 = PLAYER_SIZE * 0.5 if self.player1_is_crouching else 0
         player1_hitbox_x = self.player1_x + (PLAYER_SIZE - player1_hitbox_w) // 2
         player1_hitbox_y = (
-            self.player1_y
+            p1_y
             + (
                 (PLAYER_SIZE // 2 if self.player1_is_crouching else PLAYER_SIZE)
                 - player1_hitbox_h
@@ -4905,6 +4920,11 @@ self.score >= 150
             player1_hitbox_x, player1_hitbox_y, player1_hitbox_w, player1_hitbox_h
         )
         if self.coop_mode:
+            p2_y = (
+                self.virtual_height - PLAYER_SIZE // 2 - 10
+                if self.player2_is_crouching
+                else self.player2_y
+            )
             player2_hitbox_w = PLAYER_SIZE * PLAYER_HITBOX_SCALE
             player2_hitbox_h = (
                 PLAYER_SIZE
@@ -4914,7 +4934,7 @@ self.score >= 150
             crouch_offset_p2 = PLAYER_SIZE * 0.5 if self.player2_is_crouching else 0
             player2_hitbox_x = self.player2_x + (PLAYER_SIZE - player2_hitbox_w) // 2
             player2_hitbox_y = (
-                self.player2_y
+                p2_y
                 + (
                     (PLAYER_SIZE // 2 if self.player2_is_crouching else PLAYER_SIZE)
                     - player2_hitbox_h
